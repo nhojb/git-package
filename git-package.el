@@ -168,7 +168,9 @@ NAME is a symbol."
                    ((stringp d) (list d))
                    ((consp d) d)
                    ((not d) '("*.el")))))
-         (ref (or (plist-get config :ref) "master"))
+         ;; When no :ref is given, leave it nil so a fresh clone stays on the
+         ;; remote's default branch (main, master, or otherwise).
+         (ref (plist-get config :ref))
          (name (or name (plist-get config :name) (intern dir))))
     ;; Validate and assemble the config plist.
     (if (and name
@@ -176,7 +178,7 @@ NAME is a symbol."
              (stringp url)
              (stringp dir)
              (listp files)
-             (stringp ref))
+             (or (null ref) (stringp ref)))
         (list :name name
               :url url
               :dir dir
